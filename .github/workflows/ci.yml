@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+    paths:
+      - grammar.js
+      - src/**
+      - test/**
+      - bindings/**
+      - binding.gyp
+  pull_request:
+    paths:
+      - grammar.js
+      - src/**
+      - test/**
+      - bindings/**
+      - binding.gyp
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test parser
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up the repo
+        uses: tree-sitter/setup-action/cli@v1
+      - name: Set up examples
+        run: |-
+          git clone https://github.com/pinterest/ktlint            examples/ktlint --single-branch --depth=1 --filter=blob:none
+          git clone https://github.com/intellij-rust/intellij-rust examples/intellij-rust --single-branch --depth=1 --filter=blob:none
+          git clone https://github.com/libre-tube/LibreTube        examples/LibreTube --single-branch --depth=1 --filter=blob:none
+          git clone https://github.com/mockk/mockk                 examples/mockk --single-branch --depth=1 --filter=blob:none
+          git clone https://github.com/oss-review-toolkit/ort      examples/ort --single-branch --depth=1 --filter=blob:none
+          git clone https://github.com/getsentry/sentry-java       examples/sentry-java --single-branch --depth=1 --filter=blob:none
+      - name: Run tests
+        uses: tree-sitter/parser-test-action@v2
+        with:
+          test-rust: ${{runner.os == 'Linux'}}
+      - name: Parse examples
+        uses: tree-sitter/parse-action@v4
+        with:
+          files: |
+            examples/**/*.kt
+            !examples/ktlint/ktlint-cli/src/main/kotlin/com/pinterest/ktlint/cli/internal/KtlintCommandLine.kt
+            !examples/ort/model/src/main/kotlin/ResolvedConfiguration.kt

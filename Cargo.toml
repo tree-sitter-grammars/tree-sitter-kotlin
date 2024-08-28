@@ -1,0 +1,27 @@
+[package]
+name = "tree-sitter-kotlin-ng"
+description = "Kotlin grammar for tree-sitter"
+version = "1.0.0"
+authors = ["Amaan Qureshi <amaanq12@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+keywords = ["incremental", "parsing", "tree-sitter", "kotlin"]
+categories = ["parsing", "text-editors"]
+repository = "https://github.com/tree-sitter-grammars/tree-sitter-kotlin"
+edition = "2021"
+autoexamples = false
+
+build = "bindings/rust/build.rs"
+include = ["bindings/rust/*", "grammar.js", "queries/*", "src/*"]
+
+[lib]
+path = "bindings/rust/lib.rs"
+
+[dependencies]
+tree-sitter-language = "0.1.0"
+
+[build-dependencies]
+cc = "1.0.87"
+
+[dev-dependencies]
+tree-sitter = "0.23.0"
