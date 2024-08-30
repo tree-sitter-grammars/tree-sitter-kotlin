@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Kotlin grammar for tree-sitter",
   "repository": "github:tree-sitter-grammars/tree-sitter-kotlin",
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
   "author": "Amaan Qureshi <amaanq12@gmail.com>",
   "main": "bindings/node",
