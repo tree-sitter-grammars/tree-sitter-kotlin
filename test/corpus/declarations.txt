@@ -1,0 +1,322 @@
+==============================
+Imports
+==============================
+
+import foo.bar
+import foo.baz.*
+import foo import bar
+
+---
+
+(source_file
+  (import
+    (qualified_identifier
+      (identifier)
+      (identifier)))
+  (import
+    (qualified_identifier
+      (identifier)
+      (identifier)))
+  (import
+    (qualified_identifier
+      (identifier)))
+  (import
+    (qualified_identifier
+      (identifier))))
+
+==============================
+Loops
+==============================
+
+fun Foo() {
+  loop@ for (i in 0..10) {
+    println(i)
+    if (i == 5) {
+      break@loop
+    }
+  }
+
+  while (true) {
+    println("Hello")
+    break
+  }
+
+  do {
+    println("World")
+    break
+  } while (true)
+}
+
+---
+
+(source_file
+  (statement
+    (function_declaration
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (block
+          (statement
+            (for_statement
+              (label)
+              (variable_declaration
+                (identifier))
+              (range_expression
+                (number_literal)
+                (number_literal))
+              (block
+                (statement
+                  (call_expression
+                    (identifier)
+                    (value_arguments
+                      (value_argument
+                        (identifier)))))
+                (statement
+                  (if_expression
+                    (binary_expression
+                      (identifier)
+                      (number_literal))
+                    (block
+                      (statement
+                        (labeled_expression
+                          (label)
+                          (identifier)))))))))
+          (statement
+            (while_statement
+              (identifier)
+              (block
+                (statement
+                  (call_expression
+                    (identifier)
+                    (value_arguments
+                      (value_argument
+                        (string_literal
+                          (string_content))))))
+                (statement
+                  (identifier)))))
+          (statement
+            (do_while_statement
+              (block
+                (statement
+                  (call_expression
+                    (identifier)
+                    (value_arguments
+                      (value_argument
+                        (string_literal
+                          (string_content))))))
+                (statement
+                  (identifier)))
+              (identifier))))))))
+
+==============================
+Modifiers
+==============================
+
+internal class Test(X: Int): Y(X) {
+  abstract inline fun test()
+
+  protected open fun test2() {
+    println("Hello")
+  }
+
+  public fun test3() {
+    println("World")
+  }
+
+  tailrec suspend fun test4() {
+    println("!")
+  }
+}
+
+public object Test2 {
+  private companion object {
+    fun test() {
+      println("Hello")
+    }
+  }
+}
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (modifiers
+        (visibility_modifier))
+      (identifier)
+      (primary_constructor
+        (class_parameters
+          (class_parameter
+            (identifier)
+            (user_type
+              (identifier)))))
+      (delegation_specifiers
+        (delegation_specifier
+          (constructor_invocation
+            (user_type
+              (identifier))
+            (value_arguments
+              (value_argument
+                (identifier))))))
+      (class_body
+        (function_declaration
+          (modifiers
+            (inheritance_modifier)
+            (function_modifier))
+          (identifier)
+          (function_value_parameters))
+        (function_declaration
+          (modifiers
+            (visibility_modifier)
+            (inheritance_modifier))
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (block
+              (statement
+                (call_expression
+                  (identifier)
+                  (value_arguments
+                    (value_argument
+                      (string_literal
+                        (string_content)))))))))
+        (function_declaration
+          (modifiers
+            (visibility_modifier))
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (block
+              (statement
+                (call_expression
+                  (identifier)
+                  (value_arguments
+                    (value_argument
+                      (string_literal
+                        (string_content)))))))))
+        (function_declaration
+          (modifiers
+            (function_modifier)
+            (function_modifier))
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (block
+              (statement
+                (call_expression
+                  (identifier)
+                  (value_arguments
+                    (value_argument
+                      (string_literal
+                        (string_content))))))))))))
+  (statement
+    (object_declaration
+      (modifiers
+        (visibility_modifier))
+      (identifier)
+      (class_body
+        (companion_object
+          (modifiers
+            (visibility_modifier))
+          (class_body
+            (function_declaration
+              (identifier)
+              (function_value_parameters)
+              (function_body
+                (block
+                  (statement
+                    (call_expression
+                      (identifier)
+                      (value_arguments
+                        (value_argument
+                          (string_literal
+                            (string_content)))))))))))))))
+
+===============
+Enum Classes
+===============
+
+enum class Color {
+  RED, GREEN, BLUE;
+
+  override fun rgb() = when (this) {
+    RED -> 0xFF0000
+    GREEN -> 0x00FF00
+    BLUE -> 0x0000FF
+  }
+}
+
+enum class Color2(val rgb: Int) {
+  RED(0xFF0000), GREEN(0x00FF00), BLUE(0x0000FF);
+
+  fun rgb() = rgb
+}
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (modifiers
+        (class_modifier))
+      (identifier)
+      (enum_class_body
+        (enum_entry
+          (identifier))
+        (enum_entry
+          (identifier))
+        (enum_entry
+          (identifier))
+        (function_declaration
+          (modifiers
+            (member_modifier))
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (when_expression
+              (when_subject
+                (this_expression))
+              (when_entry
+                (identifier)
+                (statement
+                  (number_literal)))
+              (when_entry
+                (identifier)
+                (statement
+                  (number_literal)))
+              (when_entry
+                (identifier)
+                (statement
+                  (number_literal)))))))))
+  (statement
+    (class_declaration
+      (modifiers
+        (class_modifier))
+      (identifier)
+      (primary_constructor
+        (class_parameters
+          (class_parameter
+            (identifier)
+            (user_type
+              (identifier)))))
+      (enum_class_body
+        (enum_entry
+          (identifier)
+          (value_arguments
+            (value_argument
+              (number_literal))))
+        (enum_entry
+          (identifier)
+          (value_arguments
+            (value_argument
+              (number_literal))))
+        (enum_entry
+          (identifier)
+          (value_arguments
+            (value_argument
+              (number_literal))))
+        (function_declaration
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (identifier)))))))

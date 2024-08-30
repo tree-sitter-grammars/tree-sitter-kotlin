@@ -1,0 +1,599 @@
+==========================
+Simple Expressions
+==========================
+
+4 * 2 + 3 / 9 - 1
+
+---
+
+(source_file
+  (statement
+    (binary_expression
+      (binary_expression
+        (binary_expression
+          (number_literal)
+          (number_literal))
+        (binary_expression
+          (number_literal)
+          (number_literal)))
+      (number_literal))))
+
+==========================
+When expressions
+==========================
+
+when (foo) {
+  1 -> 2
+  3 -> 4
+}
+
+when (bar) {
+  is Baz -> 5
+  is Qux -> 6
+  !is Baz -> 7
+  else -> 8
+}
+
+---
+
+(source_file
+  (statement
+    (when_expression
+      (when_subject
+        (identifier))
+      (when_entry
+        (number_literal)
+        (statement
+          (number_literal)))
+      (when_entry
+        (number_literal)
+        (statement
+          (number_literal)))))
+  (statement
+    (when_expression
+      (when_subject
+        (identifier))
+      (when_entry
+        (type_test
+          (user_type
+            (identifier)))
+        (statement
+          (number_literal)))
+      (when_entry
+        (type_test
+          (user_type
+            (identifier)))
+        (statement
+          (number_literal)))
+      (when_entry
+        (type_test
+          (user_type
+            (identifier)))
+        (statement
+          (number_literal)))
+      (when_entry
+        (statement
+          (number_literal))))))
+
+==========================
+Val and Var
+==========================
+
+val foo = 1
+var (bar, baz) = 2 to 3
+val X.Y = 4
+val T: String get() = "U"
+
+---
+
+(source_file
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (number_literal)))
+  (statement
+    (property_declaration
+      (multi_variable_declaration
+        (variable_declaration
+          (identifier))
+        (variable_declaration
+          (identifier)))
+      (infix_expression
+        (number_literal)
+        (identifier)
+        (number_literal))))
+  (statement
+    (property_declaration
+      (user_type
+        (identifier))
+      (variable_declaration
+        (identifier))
+      (number_literal)))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier)
+        (user_type
+          (identifier)))
+      (getter
+        (function_body
+          (string_literal
+            (string_content)))))))
+
+==========================
+Reserved Identifiers
+==========================
+
+expect + 2
+val a = expect
+val constructor = 1
+val operator = Operator()
+
+---
+
+(source_file
+  (statement
+    (binary_expression
+      (identifier)
+      (number_literal)))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (identifier)))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (number_literal)))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (call_expression
+        (identifier)
+        (value_arguments)))))
+
+==========================
+Comments and Strings
+==========================
+
+// This is a comment
+/* This is also a comment */
+
+val string = "This is a string"
+val string2: String = "This is also a string"
+val string3 = """
+  This is a multiline string
+"""
+val string4 = "This has an ${interpolation} expression and an escape sequence \n"
+val string5 = "This is NOT a comment // /* */"
+
+---
+
+(source_file
+  (line_comment)
+  (block_comment)
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (string_literal
+        (string_content))))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier)
+        (user_type
+          (identifier)))
+      (string_literal
+        (string_content))))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (multiline_string_literal
+        (string_content))))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (string_literal
+        (string_content)
+        (interpolation
+          (identifier))
+        (string_content)
+        (escape_sequence))))
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier))
+      (string_literal
+        (string_content)))))
+
+==========================
+More Complex Expressions
+==========================
+
+class Foo : Bar {
+  val a = 1; val b = 2; val c = 3; val d = newItem<T>()
+  fun baz() {
+    this@Bar.a = 2;
+    super@Bar.b = 3;
+    super<Bar>.c = 4;
+    super<Bar>@Foo.quux()
+
+    this.forEach { it }
+
+    this.d?.call()
+  }
+
+  fun quux() {}
+}
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (identifier)
+      (delegation_specifiers
+        (delegation_specifier
+          (user_type
+            (identifier))))
+      (class_body
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (number_literal))
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (number_literal))
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (number_literal))
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (call_expression
+            (identifier)
+            (type_arguments
+              (type_projection
+                (user_type
+                  (identifier))))
+            (value_arguments)))
+        (function_declaration
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (block
+              (statement
+                (assignment
+                  (navigation_expression
+                    (this_expression
+                      (identifier))
+                    (identifier))
+                  (number_literal)))
+              (statement
+                (assignment
+                  (navigation_expression
+                    (super_expression
+                      (identifier))
+                    (identifier))
+                  (number_literal)))
+              (statement
+                (assignment
+                  (navigation_expression
+                    (super_expression
+                      (user_type
+                        (identifier)))
+                    (identifier))
+                  (number_literal)))
+              (statement
+                (call_expression
+                  (navigation_expression
+                    (super_expression
+                      (user_type
+                        (identifier))
+                      (identifier))
+                    (identifier))
+                  (value_arguments)))
+              (statement
+                (call_expression
+                  (navigation_expression
+                    (this_expression)
+                    (identifier))
+                  (annotated_lambda
+                    (lambda_literal
+                      (statement
+                        (identifier))))))
+              (statement
+                (call_expression
+                  (navigation_expression
+                    (navigation_expression
+                      (this_expression)
+                      (identifier))
+                    (identifier))
+                  (value_arguments))))))
+        (function_declaration
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (block)))))))
+
+===============================
+Keyword Operator Expressions
+===============================
+
+fun Foo() {
+  val a = 1
+  val b = a as Bar
+  val c = b is Baz
+  val d = c as? Qux
+  val e = d !is Corge
+  val f = e in Grault
+  val g = f !in Garply
+  val h = g ?: Waldo
+
+  // Tricky case with this being a negation of a variable that starts with `is`
+  // It is *not* `!is` followed by the rest of the identifier
+  val i = !isFoo
+}
+
+---
+
+(source_file
+  (statement
+    (function_declaration
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (block
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (number_literal)))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (as_expression
+                (identifier)
+                (user_type
+                  (identifier)))))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (is_expression
+                (identifier)
+                (user_type
+                  (identifier)))))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (as_expression
+                (identifier)
+                (user_type
+                  (identifier)))))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (is_expression
+                (identifier)
+                (user_type
+                  (identifier)))))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (in_expression
+                (identifier)
+                (identifier))))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (in_expression
+                (identifier)
+                (identifier))))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (binary_expression
+                (identifier)
+                (identifier))))
+          (line_comment)
+          (line_comment)
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (unary_expression
+                (identifier)))))))))
+
+==========================
+Annotations
+==========================
+
+@Foo
+@Bar(1, 2, 3)
+val a = 1
+
+@Baz(a = 1, b = 2)
+@Quux::class
+fun b() {
+}
+
+class C {
+  @D @E @F
+  val d = 1
+}
+
+@G
+fun `hello world`() = true
+
+---
+
+(source_file
+  (statement
+    (property_declaration
+      (modifiers
+        (annotation
+          (user_type
+            (identifier)))
+        (annotation
+          (constructor_invocation
+            (user_type
+              (identifier))
+            (value_arguments
+              (value_argument
+                (number_literal))
+              (value_argument
+                (number_literal))
+              (value_argument
+                (number_literal))))))
+      (variable_declaration
+        (identifier))
+      (number_literal)))
+  (statement
+    (annotated_expression
+      (annotation
+        (constructor_invocation
+          (user_type
+            (identifier))
+          (value_arguments
+            (value_argument
+              (identifier)
+              (number_literal))
+            (value_argument
+              (identifier)
+              (number_literal)))))
+      (annotated_expression
+        (annotation
+          (user_type
+            (identifier)))
+        (callable_reference))))
+  (statement
+    (function_declaration
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (block))))
+  (statement
+    (class_declaration
+      (identifier)
+      (class_body
+        (property_declaration
+          (modifiers
+            (annotation
+              (user_type
+                (identifier)))
+            (annotation
+              (user_type
+                (identifier)))
+            (annotation
+              (user_type
+                (identifier))))
+          (variable_declaration
+            (identifier))
+          (number_literal)))))
+  (statement
+    (function_declaration
+      (modifiers
+        (annotation
+          (user_type
+            (identifier))))
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (identifier)))))
+
+==========================
+Complex Types
+==========================
+
+val x: List<Int> = listOf(1, 2, 3)
+x as Foo.(Z: Int) -> Bar
+x as Foo & Bar
+x as @Y Foo<T>? & Bar<U>?
+x as Baz.Quux
+
+---
+
+(source_file
+  (statement
+    (property_declaration
+      (variable_declaration
+        (identifier)
+        (user_type
+          (identifier)
+          (type_arguments
+            (type_projection
+              (user_type
+                (identifier))))))
+      (call_expression
+        (identifier)
+        (value_arguments
+          (value_argument
+            (number_literal))
+          (value_argument
+            (number_literal))
+          (value_argument
+            (number_literal))))))
+  (statement
+    (as_expression
+      (identifier)
+      (function_type
+        (user_type
+          (identifier))
+        (function_type_parameters
+          (parameter
+            (identifier)
+            (user_type
+              (identifier))))
+        (user_type
+          (identifier)))))
+  (statement
+    (as_expression
+      (identifier)
+      (non_nullable_type
+        (user_type
+          (identifier))
+        (user_type
+          (identifier)))))
+  (statement
+    (as_expression
+      (identifier)
+      (non_nullable_type
+        (nullable_type
+          (user_type
+            (type_modifiers
+              (annotation
+                (user_type
+                  (identifier))))
+            (identifier)
+            (type_arguments
+              (type_projection
+                (user_type
+                  (identifier))))))
+        (nullable_type
+          (user_type
+            (identifier)
+            (type_arguments
+              (type_projection
+                (user_type
+                  (identifier)))))))))
+  (statement
+    (as_expression
+      (identifier)
+      (user_type
+        (identifier)
+        (identifier)))))

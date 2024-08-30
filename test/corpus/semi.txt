@@ -1,0 +1,327 @@
+================================
+Getter and Setter on a new line
+================================
+
+class Foo {
+  val bar: Int
+    get() = 5
+    set(value) {
+      field = value
+    }
+}
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (identifier)
+      (class_body
+        (property_declaration
+          (variable_declaration
+            (identifier)
+            (user_type
+              (identifier)))
+          (getter
+            (function_body
+              (number_literal)))
+          (setter
+            (identifier)
+            (function_body
+              (block
+                (statement
+                  (assignment
+                    (identifier)
+                    (identifier)))))))))))
+
+==============================================
+Modifiers with Getter and Setter on a new line
+==============================================
+
+class Foo {
+  @JvmField
+  val bar: Int
+    private get() = 5
+    public set(value) {
+      field = value
+    }
+}
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (identifier)
+      (class_body
+        (property_declaration
+          (modifiers
+            (annotation
+              (user_type
+                (identifier))))
+          (variable_declaration
+            (identifier)
+            (user_type
+              (identifier)))
+          (getter
+            (modifiers
+              (visibility_modifier))
+            (function_body
+              (number_literal)))
+          (setter
+            (modifiers
+              (visibility_modifier))
+            (identifier)
+            (function_body
+              (block
+                (statement
+                  (assignment
+                    (identifier)
+                    (identifier)))))))))))
+
+==========================
+A variable called set
+==========================
+
+fun test() {
+    val set = newSet()
+    set.add(1)
+    val a = set[0]
+    set(a, b)
+}
+
+---
+
+(source_file
+  (statement
+    (function_declaration
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (block
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (call_expression
+                (identifier)
+                (value_arguments))))
+          (statement
+            (call_expression
+              (navigation_expression
+                (identifier)
+                (identifier))
+              (value_arguments
+                (value_argument
+                  (number_literal)))))
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (index_expression
+                (identifier)
+                (number_literal))))
+          (statement
+            (call_expression
+              (identifier)
+              (value_arguments
+                (value_argument
+                  (identifier))
+                (value_argument
+                  (identifier))))))))))
+
+===================================
+A variable called constructor
+===================================
+
+fun Foo() {
+    val constructor = Constructor()
+    constructor.method()
+}
+
+---
+
+(source_file
+  (statement
+    (function_declaration
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (block
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (call_expression
+                (identifier)
+                (value_arguments))))
+          (statement
+            (call_expression
+              (navigation_expression
+                (identifier)
+                (identifier))
+              (value_arguments))))))))
+
+==================================
+Primary Constructor on a newline
+==================================
+
+public class Foo
+    @JvmOverloads
+    constructor(
+        val bar: Int = 5
+    )
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (modifiers
+        (visibility_modifier))
+      (identifier)
+      (primary_constructor
+        (modifiers
+          (annotation
+            (user_type
+              (identifier))))
+        (class_parameters
+          (class_parameter
+            (identifier)
+            (user_type
+              (identifier))
+            (number_literal)))))))
+
+====================================
+Secondary Constructor on a newline
+====================================
+
+class Foo(bar: Int) {
+  val a: Int
+  public constructor() : this(-1)
+}
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (identifier)
+      (primary_constructor
+        (class_parameters
+          (class_parameter
+            (identifier)
+            (user_type
+              (identifier)))))
+      (class_body
+        (property_declaration
+          (variable_declaration
+            (identifier)
+            (user_type
+              (identifier))))
+        (secondary_constructor
+          (modifiers
+            (visibility_modifier))
+          (function_value_parameters)
+          (constructor_delegation_call
+            (value_arguments
+              (value_argument
+                (unary_expression
+                  (number_literal))))))))))
+
+================================================
+Comment after an annotation on the same line
+================================================
+
+class Foo {
+  val bar: Int
+
+  @JvmOverloads // comment
+  fun bar() {}
+}
+
+---
+
+(source_file
+  (statement
+    (class_declaration
+      (identifier)
+      (class_body
+        (property_declaration
+          (variable_declaration
+            (identifier)
+            (user_type
+              (identifier))))
+        (function_declaration
+          (modifiers
+            (annotation
+              (user_type
+                (identifier))))
+          (line_comment)
+          (identifier)
+          (function_value_parameters)
+          (function_body
+            (block)))))))
+
+=========================================
+Else after newline
+=========================================
+
+fun test() {
+    if (true) println("true")
+    else println("false")
+}
+
+---
+
+(source_file
+  (statement
+    (function_declaration
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (block
+          (statement
+            (if_expression
+              (identifier)
+              (call_expression
+                (identifier)
+                (value_arguments
+                  (value_argument
+                    (string_literal
+                      (string_content)))))
+              (call_expression
+                (identifier)
+                (value_arguments
+                  (value_argument
+                    (string_literal
+                      (string_content))))))))))))
+
+=========================================
+?. split by a newline
+=========================================
+
+fun test() {
+    val a = b?
+        .c
+        ?.d
+}
+
+---
+
+(source_file
+  (statement
+    (function_declaration
+      (identifier)
+      (function_value_parameters)
+      (function_body
+        (block
+          (statement
+            (property_declaration
+              (variable_declaration
+                (identifier))
+              (navigation_expression
+                (navigation_expression
+                  (identifier)
+                  (identifier))
+                (identifier)))))))))
