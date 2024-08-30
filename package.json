@@ -1,6 +1,6 @@
 {
   "name": "@tree-sitter-grammars/tree-sitter-kotlin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kotlin grammar for tree-sitter",
   "repository": "github:tree-sitter-grammars/tree-sitter-kotlin",
   "publishConfig": {
