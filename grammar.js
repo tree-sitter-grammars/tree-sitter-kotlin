@@ -63,6 +63,15 @@ module.exports = grammar({
     [$.non_nullable_type],
     [$.function_type],
     [$._receiver_type],
+
+    // soft keyword "final" can be both an inheritance_modifier and a reserved identifier
+    [$.inheritance_modifier, $._reserved_identifier],
+    // soft keyword "internal" can be both a visibility_modifier and a reserved identifier
+    [$.visibility_modifier, $._reserved_identifier],
+    // soft keyword "suspend" can be both a function_modifier and a reserved identifier
+    [$.function_modifier, $._reserved_identifier],
+    // soft keyword "suspend" ambiguity in type modifiers
+    [$.type_modifiers, $._reserved_identifier],
   ],
 
   extras: $ => [
@@ -468,27 +477,27 @@ module.exports = grammar({
       'value',
     ),
 
-    function_modifier: _ => prec.right(choice(
+    function_modifier: $ => prec.right(choice(
       'tailrec',
       'operator',
       'infix',
       'inline',
       'external',
-      'suspend',
+      alias(prec(2, 'suspend'), $._reserved_identifier),
     )),
 
     property_modifier: _ => 'const',
 
-    visibility_modifier: _ => choice(
+    visibility_modifier: $ => choice(
       'public',
       'private',
       'protected',
-      'internal',
+      alias(prec(2, 'internal'), $._reserved_identifier),
     ),
 
-    inheritance_modifier: _ => choice(
+    inheritance_modifier: $ => choice(
       'abstract',
-      'final',
+      alias(prec.dynamic(2, 'final'), $._reserved_identifier),
       'open',
     ),
 
@@ -513,7 +522,7 @@ module.exports = grammar({
     ),
 
     type_modifiers: $ => prec.right(
-      repeat1(choice($.annotation, 'suspend')),
+      repeat1(choice($.annotation, alias('suspend', $._reserved_identifier))),
     ),
 
     annotation: $ => choice(
@@ -947,7 +956,7 @@ module.exports = grammar({
           token.immediate(prec(1, /[^"\\\$]+/)),
           '$',
         ),
-        $.string_content,
+          $.string_content,
         ),
         $.escape_sequence,
         $.interpolation,
@@ -1059,6 +1068,9 @@ module.exports = grammar({
         'set',
         'operator',
         'value',
+        'final',
+        'internal',
+        'suspend',
       ),
       $.identifier,
     )),
