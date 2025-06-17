@@ -1,5 +1,4 @@
 {
-  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "kotlin",
   "word": "identifier",
   "rules": {
@@ -2547,8 +2546,17 @@
             "value": "external"
           },
           {
-            "type": "STRING",
-            "value": "suspend"
+            "type": "ALIAS",
+            "content": {
+              "type": "PREC",
+              "value": 2,
+              "content": {
+                "type": "STRING",
+                "value": "suspend"
+              }
+            },
+            "named": true,
+            "value": "_reserved_identifier"
           }
         ]
       }
@@ -2573,8 +2581,17 @@
           "value": "protected"
         },
         {
-          "type": "STRING",
-          "value": "internal"
+          "type": "ALIAS",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "STRING",
+              "value": "internal"
+            }
+          },
+          "named": true,
+          "value": "_reserved_identifier"
         }
       ]
     },
@@ -2586,8 +2603,17 @@
           "value": "abstract"
         },
         {
-          "type": "STRING",
-          "value": "final"
+          "type": "ALIAS",
+          "content": {
+            "type": "PREC_DYNAMIC",
+            "value": 2,
+            "content": {
+              "type": "STRING",
+              "value": "final"
+            }
+          },
+          "named": true,
+          "value": "_reserved_identifier"
         },
         {
           "type": "STRING",
@@ -2671,8 +2697,13 @@
               "name": "annotation"
             },
             {
-              "type": "STRING",
-              "value": "suspend"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "suspend"
+              },
+              "named": true,
+              "value": "_reserved_identifier"
             }
           ]
         }
@@ -6105,8 +6136,7 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "[\\p{L}_][\\p{L}_\\p{Nd}]*",
-            "flags": "u"
+            "value": "[\\p{L}_][\\p{L}_\\p{Nd}]*"
           },
           {
             "type": "PATTERN",
@@ -6170,6 +6200,18 @@
             {
               "type": "STRING",
               "value": "value"
+            },
+            {
+              "type": "STRING",
+              "value": "final"
+            },
+            {
+              "type": "STRING",
+              "value": "internal"
+            },
+            {
+              "type": "STRING",
+              "value": "suspend"
             }
           ]
         },
@@ -6349,6 +6391,22 @@
     ],
     [
       "_receiver_type"
+    ],
+    [
+      "inheritance_modifier",
+      "_reserved_identifier"
+    ],
+    [
+      "visibility_modifier",
+      "_reserved_identifier"
+    ],
+    [
+      "function_modifier",
+      "_reserved_identifier"
+    ],
+    [
+      "type_modifiers",
+      "_reserved_identifier"
     ]
   ],
   "precedences": [
@@ -6442,3 +6500,4 @@
     "statement"
   ]
 }
+
