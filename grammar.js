@@ -704,7 +704,10 @@ module.exports = grammar({
         ['>=', PREC.RELATIONAL],
         ['<=', PREC.RELATIONAL],
         ['<', PREC.RELATIONAL],
-        ['?:', PREC.ELVIS],
+        [
+          alias(seq('?', token.immediate(':')), $.elvis_operator),
+          PREC.ELVIS
+        ],
       ];
 
       return choice(...table.map(([operator, precedence]) => {

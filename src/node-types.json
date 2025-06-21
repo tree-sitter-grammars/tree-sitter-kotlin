@@ -455,7 +455,7 @@
         ]
       },
       "operator": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
@@ -515,8 +515,8 @@
             "named": false
           },
           {
-            "type": "?:",
-            "named": false
+            "type": "elvis_operator",
+            "named": true
           },
           {
             "type": "||",
@@ -2766,10 +2766,6 @@
     "named": false
   },
   {
-    "type": "?:",
-    "named": false
-  },
-  {
     "type": "@",
     "named": false
   },
@@ -2872,6 +2868,10 @@
   {
     "type": "else",
     "named": false
+  },
+  {
+    "type": "elvis_operator",
+    "named": true
   },
   {
     "type": "enum",
