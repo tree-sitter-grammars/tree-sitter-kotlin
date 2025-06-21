@@ -279,28 +279,85 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                     }
                 }
                 // If `get` was found and the keyword is not valid, return a semi since it's being used as an identifier
-                else if (index == 3 && (!valid_symbols[GET] || lexer->lookahead == '[')) {
-                    return true;
+                else if (index == 3) {
+                    if (valid_symbols[GET]) {
+                        uint32_t read_count = 0;
+                        while (iswspace(lexer->lookahead)) {
+                            lexer->lookahead; // consume
+                            read_count++;
+                            skip(lexer);
+                        }
+
+                        if (lexer->lookahead == '(') {
+                            lexer->lookahead; // consume
+                            read_count++;
+                            skip(lexer);
+                            while (iswspace(lexer->lookahead)) {
+                                lexer->lookahead; // consume
+                                read_count++;
+                                skip(lexer);
+                            }
+                            if (lexer->lookahead == ')') {
+                                lexer->lookahead; // consume
+                                read_count++;
+                                skip(lexer);
+                                while (iswspace(lexer->lookahead)) {
+                                    lexer->lookahead; // consume
+                                    read_count++;
+                                    skip(lexer);
+                                }
+                                if (lexer->lookahead != '=' && lexer->lookahead != '{' && lexer->lookahead != ':') {
+                                    return true;
+                                }
+                            }
+                        }
+                    } else {
+                        return true;
+                    }
                 }
                 // If `set` was found and the keyword is not valid, return a semi since it's being used as an identifier
-                else if (index == 4 && (!valid_symbols[SET] || lexer->lookahead == '[' || lexer->lookahead == '(' ||
-                                        lexer->lookahead == '.')) {
-                    if (lexer->lookahead == '(' && valid_symbols[SET]) {
-                        // skip until the closing parenthesis
-                        while (lexer->lookahead != ')' && !lexer->eof(lexer)) {
+                else if (index == 4) {
+                    if (valid_symbols[SET]) {
+                        uint32_t read_count = 0;
+                        while (iswspace(lexer->lookahead)) {
+                            lexer->lookahead; // consume
+                            read_count++;
                             skip(lexer);
                         }
-                        skip(lexer);
 
-                        while (iswspace(lexer->lookahead)) {
-                            if (lexer->lookahead == '\n') {
+                        if (lexer->lookahead == '(') {
+                            lexer->lookahead; // consume
+                            read_count++;
+                            skip(lexer);
+                            // We don't care about the content of the parenthesis for a function call
+                            uint8_t paren_level = 1;
+                            while (paren_level > 0 && !lexer->eof(lexer)) {
+                                if (lexer->lookahead == '(') {
+                                    paren_level++;
+                                }
+                                if (lexer->lookahead == ')') {
+                                    paren_level--;
+                                }
+                                lexer->lookahead; // consume
+                                read_count++;
+                                skip(lexer);
+                            }
+
+                            while (iswspace(lexer->lookahead)) {
+                                lexer->lookahead; // consume
+                                read_count++;
+                                skip(lexer);
+                            }
+
+                            // A setter definition can't be followed by these operators,
+                            // so if we see one, it must be a function call.
+                            if (lexer->lookahead != '=' && lexer->lookahead != '{' && lexer->lookahead != ':') {
                                 return true;
                             }
-                            skip(lexer);
                         }
-                        return false;
+                    } else {
+                        return true;
                     }
-                    return true;
                 }
                 // If `in` was found and this specific external keyword is valid,
                 // return a semi since it's being used in a range test
@@ -457,3 +514,4 @@ comment:
 
     return false;
 }
+
