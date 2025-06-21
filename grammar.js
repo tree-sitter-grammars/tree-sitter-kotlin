@@ -577,7 +577,8 @@ module.exports = grammar({
     nullable_type: $ => prec(PREC.NULLABLE, seq(
       optional($.type_modifiers),
       $.type,
-      '?',
+      // Match a `?` only when it is **not** immediately followed by `:`
+      token.immediate('?'),
     )),
 
     non_nullable_type: $ => prec.right(seq(
