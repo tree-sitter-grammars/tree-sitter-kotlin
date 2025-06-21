@@ -72,6 +72,10 @@ module.exports = grammar({
     [$.function_modifier, $._reserved_identifier],
     // soft keyword "suspend" ambiguity in type modifiers
     [$.type_modifiers, $._reserved_identifier],
+    // soft keyword "dynamic" conflicts in various type contexts
+    [$._receiver_type, $._reserved_identifier],
+    [$.type, $._reserved_identifier],
+    [$.type, $._receiver_type, $._reserved_identifier],
   ],
 
   extras: $ => [
@@ -1061,6 +1065,7 @@ module.exports = grammar({
         'constructor',
         'const',
         'data',
+        'dynamic',
         'enum',
         'expect',
         'inner',
