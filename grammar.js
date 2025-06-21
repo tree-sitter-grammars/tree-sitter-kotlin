@@ -16,6 +16,7 @@ const PREC = {
   AS: 12,
   CALL: 13,
   UNARY: 14,
+  NULLABLE: 15,
 };
 
 module.exports = grammar({
@@ -573,11 +574,11 @@ module.exports = grammar({
 
     _simple_user_type: $ => prec.right(seq($._identifier, optional($.type_arguments))),
 
-    nullable_type: $ => seq(
+    nullable_type: $ => prec(PREC.NULLABLE, seq(
       optional($.type_modifiers),
       $.type,
       '?',
-    ),
+    )),
 
     non_nullable_type: $ => prec.right(seq(
       optional($.type_modifiers),
@@ -705,7 +706,7 @@ module.exports = grammar({
         ['<=', PREC.RELATIONAL],
         ['<', PREC.RELATIONAL],
         [
-          alias(seq('?', token.immediate(':')), $.elvis_operator),
+          seq('?', token.immediate(':')),
           PREC.ELVIS
         ],
       ];
