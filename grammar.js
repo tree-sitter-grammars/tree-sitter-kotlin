@@ -778,10 +778,10 @@ module.exports = grammar({
 
     lambda_parameters: $ => seq(commaSep1($._lambda_parameter), optional(',')),
 
-    _lambda_parameter: $ => choice(
+    _lambda_parameter: $ => prec(1, choice(
       $.variable_declaration,
-      $.multi_variable_declaration,
-    ),
+      seq($.multi_variable_declaration, optional(seq(':', $.type))),
+    )),
 
     anonymous_function: $ => prec.right(seq(
       'fun',
