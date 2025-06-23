@@ -734,6 +734,10 @@
       "required": true,
       "types": [
         {
+          "type": "class_parameter_modifiers",
+          "named": true
+        },
+        {
           "type": "expression",
           "named": true
         },
@@ -742,11 +746,50 @@
           "named": true
         },
         {
-          "type": "modifiers",
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_parameter_modifiers",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "annotation",
           "named": true
         },
         {
-          "type": "type",
+          "type": "function_modifier",
+          "named": true
+        },
+        {
+          "type": "inheritance_modifier",
+          "named": true
+        },
+        {
+          "type": "member_modifier",
+          "named": true
+        },
+        {
+          "type": "parameter_modifier",
+          "named": true
+        },
+        {
+          "type": "platform_modifier",
+          "named": true
+        },
+        {
+          "type": "property_modifier",
+          "named": true
+        },
+        {
+          "type": "visibility_modifier",
           "named": true
         }
       ]

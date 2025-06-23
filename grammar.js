@@ -258,7 +258,7 @@ module.exports = grammar({
     ),
 
     class_parameter: $ => seq(
-      optional($.modifiers),
+      optional($.class_parameter_modifiers),
       optional(choice('val', 'var')),
       $._identifier,
       ':', $.type,
@@ -1088,6 +1088,17 @@ module.exports = grammar({
     shebang: _ => /#!.*/,
 
     line_comment: _ => token(seq('//', /.*/)),
+
+    class_parameter_modifiers: $ => prec.right(repeat1(choice(
+      $.annotation,
+      $.parameter_modifier,
+      $.property_modifier,
+      $.visibility_modifier,
+      $.inheritance_modifier,
+      $.member_modifier,
+      $.function_modifier,
+      $.platform_modifier,
+    ))),
   },
 });
 
