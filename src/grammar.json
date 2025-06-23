@@ -1,5 +1,4 @@
 {
-  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "kotlin",
   "word": "identifier",
   "rules": {
@@ -1030,7 +1029,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "modifiers"
+              "name": "class_parameter_modifiers"
             },
             {
               "type": "BLANK"
@@ -2547,8 +2546,17 @@
             "value": "external"
           },
           {
-            "type": "STRING",
-            "value": "suspend"
+            "type": "ALIAS",
+            "content": {
+              "type": "PREC",
+              "value": 2,
+              "content": {
+                "type": "STRING",
+                "value": "suspend"
+              }
+            },
+            "named": true,
+            "value": "_reserved_identifier"
           }
         ]
       }
@@ -2573,8 +2581,17 @@
           "value": "protected"
         },
         {
-          "type": "STRING",
-          "value": "internal"
+          "type": "ALIAS",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "STRING",
+              "value": "internal"
+            }
+          },
+          "named": true,
+          "value": "_reserved_identifier"
         }
       ]
     },
@@ -2586,8 +2603,17 @@
           "value": "abstract"
         },
         {
-          "type": "STRING",
-          "value": "final"
+          "type": "ALIAS",
+          "content": {
+            "type": "PREC_DYNAMIC",
+            "value": 2,
+            "content": {
+              "type": "STRING",
+              "value": "final"
+            }
+          },
+          "named": true,
+          "value": "_reserved_identifier"
         },
         {
           "type": "STRING",
@@ -2671,8 +2697,13 @@
               "name": "annotation"
             },
             {
-              "type": "STRING",
-              "value": "suspend"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "suspend"
+              },
+              "named": true,
+              "value": "_reserved_identifier"
             }
           ]
         }
@@ -2900,29 +2931,36 @@
       }
     },
     "nullable_type": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "type_modifiers"
-            },
-            {
-              "type": "BLANK"
+      "type": "PREC",
+      "value": 15,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "type_modifiers"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "SYMBOL",
+            "name": "type"
+          },
+          {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "?"
             }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "type"
-        },
-        {
-          "type": "STRING",
-          "value": "?"
-        }
-      ]
+          }
+        ]
+      }
     },
     "non_nullable_type": {
       "type": "PREC_RIGHT",
@@ -4036,8 +4074,20 @@
                 "type": "FIELD",
                 "name": "operator",
                 "content": {
-                  "type": "STRING",
-                  "value": "?:"
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "?"
+                    },
+                    {
+                      "type": "IMMEDIATE_TOKEN",
+                      "content": {
+                        "type": "STRING",
+                        "value": ":"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -4453,17 +4503,47 @@
       ]
     },
     "_lambda_parameter": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "variable_declaration"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "multi_variable_declaration"
-        }
-      ]
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "variable_declaration"
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "multi_variable_declaration"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ":"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "type"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     "anonymous_function": {
       "type": "PREC_RIGHT",
@@ -6105,8 +6185,7 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "[\\p{L}_][\\p{L}_\\p{Nd}]*",
-            "flags": "u"
+            "value": "[\\p{L}_][\\p{L}_\\p{Nd}]*"
           },
           {
             "type": "PATTERN",
@@ -6145,6 +6224,10 @@
             },
             {
               "type": "STRING",
+              "value": "dynamic"
+            },
+            {
+              "type": "STRING",
               "value": "enum"
             },
             {
@@ -6170,6 +6253,18 @@
             {
               "type": "STRING",
               "value": "value"
+            },
+            {
+              "type": "STRING",
+              "value": "final"
+            },
+            {
+              "type": "STRING",
+              "value": "internal"
+            },
+            {
+              "type": "STRING",
+              "value": "suspend"
             }
           ]
         },
@@ -6195,6 +6290,50 @@
             "value": ".*"
           }
         ]
+      }
+    },
+    "class_parameter_modifiers": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "REPEAT1",
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "annotation"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "parameter_modifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "property_modifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "visibility_modifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "inheritance_modifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "member_modifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "function_modifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "platform_modifier"
+            }
+          ]
+        }
       }
     }
   },
@@ -6349,6 +6488,35 @@
     ],
     [
       "_receiver_type"
+    ],
+    [
+      "inheritance_modifier",
+      "_reserved_identifier"
+    ],
+    [
+      "visibility_modifier",
+      "_reserved_identifier"
+    ],
+    [
+      "function_modifier",
+      "_reserved_identifier"
+    ],
+    [
+      "type_modifiers",
+      "_reserved_identifier"
+    ],
+    [
+      "_receiver_type",
+      "_reserved_identifier"
+    ],
+    [
+      "type",
+      "_reserved_identifier"
+    ],
+    [
+      "type",
+      "_receiver_type",
+      "_reserved_identifier"
     ]
   ],
   "precedences": [
@@ -6442,3 +6610,4 @@
     "statement"
   ]
 }
+

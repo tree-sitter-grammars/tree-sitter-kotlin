@@ -16,6 +16,7 @@ const PREC = {
   AS: 12,
   CALL: 13,
   UNARY: 14,
+  NULLABLE: 15,
 };
 
 module.exports = grammar({
@@ -63,6 +64,19 @@ module.exports = grammar({
     [$.non_nullable_type],
     [$.function_type],
     [$._receiver_type],
+
+    // soft keyword "final" can be both an inheritance_modifier and a reserved identifier
+    [$.inheritance_modifier, $._reserved_identifier],
+    // soft keyword "internal" can be both a visibility_modifier and a reserved identifier
+    [$.visibility_modifier, $._reserved_identifier],
+    // soft keyword "suspend" can be both a function_modifier and a reserved identifier
+    [$.function_modifier, $._reserved_identifier],
+    // soft keyword "suspend" ambiguity in type modifiers
+    [$.type_modifiers, $._reserved_identifier],
+    // soft keyword "dynamic" conflicts in various type contexts
+    [$._receiver_type, $._reserved_identifier],
+    [$.type, $._reserved_identifier],
+    [$.type, $._receiver_type, $._reserved_identifier],
   ],
 
   extras: $ => [
@@ -244,7 +258,7 @@ module.exports = grammar({
     ),
 
     class_parameter: $ => seq(
-      optional($.modifiers),
+      optional($.class_parameter_modifiers),
       optional(choice('val', 'var')),
       $._identifier,
       ':', $.type,
@@ -468,27 +482,27 @@ module.exports = grammar({
       'value',
     ),
 
-    function_modifier: _ => prec.right(choice(
+    function_modifier: $ => prec.right(choice(
       'tailrec',
       'operator',
       'infix',
       'inline',
       'external',
-      'suspend',
+      alias(prec(2, 'suspend'), $._reserved_identifier),
     )),
 
     property_modifier: _ => 'const',
 
-    visibility_modifier: _ => choice(
+    visibility_modifier: $ => choice(
       'public',
       'private',
       'protected',
-      'internal',
+      alias(prec(2, 'internal'), $._reserved_identifier),
     ),
 
-    inheritance_modifier: _ => choice(
+    inheritance_modifier: $ => choice(
       'abstract',
-      'final',
+      alias(prec.dynamic(2, 'final'), $._reserved_identifier),
       'open',
     ),
 
@@ -513,7 +527,7 @@ module.exports = grammar({
     ),
 
     type_modifiers: $ => prec.right(
-      repeat1(choice($.annotation, 'suspend')),
+      repeat1(choice($.annotation, alias('suspend', $._reserved_identifier))),
     ),
 
     annotation: $ => choice(
@@ -560,11 +574,12 @@ module.exports = grammar({
 
     _simple_user_type: $ => prec.right(seq($._identifier, optional($.type_arguments))),
 
-    nullable_type: $ => seq(
+    nullable_type: $ => prec(PREC.NULLABLE, seq(
       optional($.type_modifiers),
       $.type,
-      '?',
-    ),
+      // Match a `?` only when it is **not** immediately followed by `:`
+      token.immediate('?'),
+    )),
 
     non_nullable_type: $ => prec.right(seq(
       optional($.type_modifiers),
@@ -691,7 +706,10 @@ module.exports = grammar({
         ['>=', PREC.RELATIONAL],
         ['<=', PREC.RELATIONAL],
         ['<', PREC.RELATIONAL],
-        ['?:', PREC.ELVIS],
+        [
+          seq('?', token.immediate(':')),
+          PREC.ELVIS
+        ],
       ];
 
       return choice(...table.map(([operator, precedence]) => {
@@ -760,10 +778,10 @@ module.exports = grammar({
 
     lambda_parameters: $ => seq(commaSep1($._lambda_parameter), optional(',')),
 
-    _lambda_parameter: $ => choice(
+    _lambda_parameter: $ => prec(1, choice(
       $.variable_declaration,
-      $.multi_variable_declaration,
-    ),
+      seq($.multi_variable_declaration, optional(seq(':', $.type))),
+    )),
 
     anonymous_function: $ => prec.right(seq(
       'fun',
@@ -947,7 +965,7 @@ module.exports = grammar({
           token.immediate(prec(1, /[^"\\\$]+/)),
           '$',
         ),
-        $.string_content,
+          $.string_content,
         ),
         $.escape_sequence,
         $.interpolation,
@@ -1052,6 +1070,7 @@ module.exports = grammar({
         'constructor',
         'const',
         'data',
+        'dynamic',
         'enum',
         'expect',
         'inner',
@@ -1059,6 +1078,9 @@ module.exports = grammar({
         'set',
         'operator',
         'value',
+        'final',
+        'internal',
+        'suspend',
       ),
       $.identifier,
     )),
@@ -1066,6 +1088,17 @@ module.exports = grammar({
     shebang: _ => /#!.*/,
 
     line_comment: _ => token(seq('//', /.*/)),
+
+    class_parameter_modifiers: $ => prec.right(repeat1(choice(
+      $.annotation,
+      $.parameter_modifier,
+      $.property_modifier,
+      $.visibility_modifier,
+      $.inheritance_modifier,
+      $.member_modifier,
+      $.function_modifier,
+      $.platform_modifier,
+    ))),
   },
 });
 

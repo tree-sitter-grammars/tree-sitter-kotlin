@@ -455,7 +455,7 @@
         ]
       },
       "operator": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
@@ -491,6 +491,10 @@
             "named": false
           },
           {
+            "type": ":",
+            "named": false
+          },
+          {
             "type": "<",
             "named": false
           },
@@ -515,7 +519,7 @@
             "named": false
           },
           {
-            "type": "?:",
+            "type": "?",
             "named": false
           },
           {
@@ -730,6 +734,10 @@
       "required": true,
       "types": [
         {
+          "type": "class_parameter_modifiers",
+          "named": true
+        },
+        {
           "type": "expression",
           "named": true
         },
@@ -738,11 +746,50 @@
           "named": true
         },
         {
-          "type": "modifiers",
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_parameter_modifiers",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "annotation",
           "named": true
         },
         {
-          "type": "type",
+          "type": "function_modifier",
+          "named": true
+        },
+        {
+          "type": "inheritance_modifier",
+          "named": true
+        },
+        {
+          "type": "member_modifier",
+          "named": true
+        },
+        {
+          "type": "parameter_modifier",
+          "named": true
+        },
+        {
+          "type": "platform_modifier",
+          "named": true
+        },
+        {
+          "type": "property_modifier",
+          "named": true
+        },
+        {
+          "type": "visibility_modifier",
           "named": true
         }
       ]
@@ -1128,7 +1175,17 @@
   {
     "type": "function_modifier",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "_reserved_identifier",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "function_type",
@@ -1334,7 +1391,17 @@
   {
     "type": "inheritance_modifier",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "_reserved_identifier",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "interpolation",
@@ -1429,6 +1496,10 @@
       "types": [
         {
           "type": "multi_variable_declaration",
+          "named": true
+        },
+        {
+          "type": "type",
           "named": true
         },
         {
@@ -1965,7 +2036,6 @@
   {
     "type": "source_file",
     "named": true,
-    "root": true,
     "fields": {},
     "children": {
       "multiple": true,
@@ -2193,8 +2263,12 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
+        {
+          "type": "_reserved_identifier",
+          "named": true
+        },
         {
           "type": "annotation",
           "named": true
@@ -2436,7 +2510,17 @@
   {
     "type": "visibility_modifier",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "_reserved_identifier",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "when_entry",
@@ -2733,10 +2817,6 @@
     "named": false
   },
   {
-    "type": "?:",
-    "named": false
-  },
-  {
     "type": "@",
     "named": false
   },
@@ -2747,6 +2827,10 @@
   {
     "type": "]",
     "named": false
+  },
+  {
+    "type": "_reserved_identifier",
+    "named": true
   },
   {
     "type": "abstract",
@@ -2773,6 +2857,14 @@
     "named": true
   },
   {
+    "type": "break",
+    "named": false
+  },
+  {
+    "type": "break@",
+    "named": false
+  },
+  {
     "type": "by",
     "named": false
   },
@@ -2794,6 +2886,14 @@
   },
   {
     "type": "constructor",
+    "named": false
+  },
+  {
+    "type": "continue",
+    "named": false
+  },
+  {
+    "type": "continue@",
     "named": false
   },
   {
@@ -2842,10 +2942,6 @@
   },
   {
     "type": "file",
-    "named": false
-  },
-  {
-    "type": "final",
     "named": false
   },
   {
@@ -2902,10 +2998,6 @@
   },
   {
     "type": "interface",
-    "named": false
-  },
-  {
-    "type": "internal",
     "named": false
   },
   {
@@ -3018,10 +3110,6 @@
   },
   {
     "type": "super@",
-    "named": false
-  },
-  {
-    "type": "suspend",
     "named": false
   },
   {
