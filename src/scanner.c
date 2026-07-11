@@ -164,8 +164,39 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                         goto q_dot_from_semi;
                     }
                     return false;
+                // Inside a class body, a declaration-starting hard keyword right
+                // after a complete member terminates it even without a newline:
+                // the spec grammar makes `semis` optional after declarations, so
+                // `class C { fun a() {} fun b() {} }` is valid Kotlin. All of these
+                // are hard keywords and can never continue the preceding member
+                // (e.g. as an infix function name). Restricted to CLASS_MEMBER_SEMI:
+                // at statement level a soft keyword like `enum` in `enum class`
+                // parses as a bare identifier first, and a speculative SEMI before
+                // `class` would split the modifier from its declaration. Class
+                // members cannot be bare expressions, so that hazard does not exist
+                // for CLASS_MEMBER_SEMI.
+                case 'c':
+                case 'f':
+                case 'o':
+                case 't':
+                case 'v':
                 case 'i':
-                    return scan_word(lexer, "import");
+                    if (valid_symbols[CLASS_MEMBER_SEMI] && !valid_symbols[SEMI]) {
+                        char decl_word[16] = {0};
+                        if (scan_words(lexer,
+                                       (const char[16][16]){"class", "fun", "interface", "object",
+                                                            "typealias", "val", "var"},
+                                       decl_word, NULL)) {
+                            // Word boundary: reject identifiers that merely start
+                            // with a keyword (`val2`, `fun_x`).
+                            return !iswalnum(lexer->lookahead) && lexer->lookahead != '_';
+                        }
+                        return false;
+                    }
+                    if (lexer->lookahead == 'i') {
+                        return scan_word(lexer, "import");
+                    }
+                    return false;
                 case ';':
                     advance(lexer);
                     lexer->mark_end(lexer);
