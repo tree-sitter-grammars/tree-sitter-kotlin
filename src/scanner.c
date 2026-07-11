@@ -170,6 +170,11 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                     advance(lexer);
                     lexer->mark_end(lexer);
                     return true;
+                // A closing brace terminates the current statement/member even without a
+                // newline (`class A { fun m() {} }`). mark_end already sat at the start, so
+                // this yields a zero-width semicolon before `}`.
+                case '}':
+                    return true;
                 default:
                     return false;
             }
