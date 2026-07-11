@@ -306,3 +306,121 @@ fun test() {
               (identifier)
               (identifier))
             (identifier)))))))
+
+=========================================================
+Single-line declaration body followed by next declaration
+=========================================================
+
+class A { fun m() {} }
+class B { fun n() {} }
+interface R { fun find(): Int { return 1 } }
+object O { fun z() {} }
+fun after() {}
+
+---
+
+(source_file
+  (class_declaration
+    (identifier)
+    (class_body
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (function_body
+          (block)))))
+  (class_declaration
+    (identifier)
+    (class_body
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (function_body
+          (block)))))
+  (class_declaration
+    (identifier)
+    (class_body
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (user_type
+          (identifier))
+        (function_body
+          (block
+            (return_expression
+              (number_literal)))))))
+  (object_declaration
+    (identifier)
+    (class_body
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (function_body
+          (block)))))
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block))))
+
+====================================================
+Multiple class members on one line without semicolons
+====================================================
+
+class C { fun a() {} fun b() {} }
+class D { val x: Int = 1 var y: Int = 2 }
+class E { init { f() } fun f() {} }
+enum class Color { RED, GREEN }
+
+---
+
+(source_file
+  (class_declaration
+    (identifier)
+    (class_body
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (function_body
+          (block)))
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (function_body
+          (block)))))
+  (class_declaration
+    (identifier)
+    (class_body
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (number_literal))
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (number_literal))))
+  (class_declaration
+    (identifier)
+    (class_body
+      (anonymous_initializer
+        (block
+          (call_expression
+            (identifier)
+            (value_arguments))))
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (function_body
+          (block)))))
+  (class_declaration
+    (modifiers
+      (class_modifier))
+    (identifier)
+    (enum_class_body
+      (enum_entry
+        (identifier))
+      (enum_entry
+        (identifier)))))
