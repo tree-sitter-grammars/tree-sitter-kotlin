@@ -314,7 +314,10 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                 return true;
             case '@':
                 if (valid_symbols[CONSTRUCTOR]) {
-                    while (!iswspace(lexer->lookahead)) {
+                    // At EOF lookahead is 0, which is not whitespace, so this loop has to stop
+                    // at end of input as well -- otherwise skip() has nothing left to consume
+                    // and the condition stays true forever.
+                    while (!lexer->eof(lexer) && !iswspace(lexer->lookahead)) {
                         skip(lexer);
                     }
                     while (iswspace(lexer->lookahead)) {
@@ -331,7 +334,10 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                 }
                 if (valid_symbols[GET] || valid_symbols[SET]) {
                     bool saw_paren = false;
-                    while ((saw_paren ? lexer->lookahead != '\n' : !iswspace(lexer->lookahead))) {
+                    // Same EOF guard as above: at end of input lookahead is neither '\n' nor
+                    // whitespace, so neither arm of this condition can end the loop.
+                    while (!lexer->eof(lexer) &&
+                           (saw_paren ? lexer->lookahead != '\n' : !iswspace(lexer->lookahead))) {
                         skip(lexer);
                         if (lexer->lookahead == '(') {
                             saw_paren = true;
