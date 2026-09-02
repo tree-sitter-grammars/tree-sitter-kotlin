@@ -307,6 +307,18 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                 else if (index == 1 && valid_symbols[IN]) {
                     return true;
                 }
+                // `where` continues a declaration only as a type-constraints
+                // clause; followed by `?` `.` `=` `(` it is an ordinary
+                // identifier (`where?.let { ... }`) — close the statement.
+                else if (index == 8) {
+                    while (iswspace(lexer->lookahead)) {
+                        skip(lexer);
+                    }
+                    if (lexer->lookahead == '?' || lexer->lookahead == '.' ||
+                        lexer->lookahead == '=' || lexer->lookahead == '(') {
+                        return true;
+                    }
+                }
                 return !res;
             case ';':
                 advance(lexer);

@@ -306,3 +306,82 @@ fun test() {
               (identifier)
               (identifier))
             (identifier)))))))
+
+==========================
+A variable called where
+==========================
+
+fun test() {
+    val where = newWhere()
+    where.foo()
+    where?.let { println(it) }
+}
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (call_expression
+            (identifier)
+            (value_arguments)))
+        (call_expression
+          (navigation_expression
+            (identifier)
+            (identifier))
+          (value_arguments))
+        (call_expression
+          (navigation_expression
+            (identifier)
+            (identifier))
+          (annotated_lambda
+            (lambda_literal
+              (call_expression
+                (identifier)
+                (value_arguments
+                  (value_argument
+                    (identifier)))))))))))
+
+=====================================
+Where type constraint clause on a newline
+=====================================
+
+fun <T> foo(x: T): T
+    where T : Comparable<T> {
+    return x
+}
+
+---
+
+(source_file
+  (function_declaration
+    (type_parameters
+      (type_parameter
+        (identifier)))
+    (identifier)
+    (function_value_parameters
+      (parameter
+        (identifier)
+        (user_type
+          (identifier))))
+    (user_type
+      (identifier))
+    (type_constraints
+      (type_constraint
+        (identifier)
+        (user_type
+          (identifier)
+          (type_arguments
+            (type_projection
+              (user_type
+                (identifier)))))))
+    (function_body
+      (block
+        (return_expression
+          (identifier))))))
