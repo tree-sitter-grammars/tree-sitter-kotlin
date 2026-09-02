@@ -547,3 +547,51 @@ x as Baz.Quux
     (user_type
       (identifier)
       (identifier))))
+
+==========================
+When guard conditions
+==========================
+
+when (x) {
+  is Column<*> if x.isEntityIdentifier() -> 1
+  is String, is Char if x.isEmpty() -> 2
+  3 -> 3
+  else -> 4
+}
+
+---
+
+(source_file
+  (when_expression
+    (when_subject
+      (identifier))
+    (when_entry
+      (type_test
+        (user_type
+          (identifier)
+          (type_arguments
+            (type_projection))))
+      (call_expression
+        (navigation_expression
+          (identifier)
+          (identifier))
+        (value_arguments))
+      (number_literal))
+    (when_entry
+      (type_test
+        (user_type
+          (identifier)))
+      (type_test
+        (user_type
+          (identifier)))
+      (call_expression
+        (navigation_expression
+          (identifier)
+          (identifier))
+        (value_arguments))
+      (number_literal))
+    (when_entry
+      (number_literal)
+      (number_literal))
+    (when_entry
+      (number_literal))))
