@@ -313,23 +313,11 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                 lexer->mark_end(lexer);
                 return true;
             case '@':
-                if (valid_symbols[CONSTRUCTOR]) {
-                    while (!iswspace(lexer->lookahead)) {
-                        skip(lexer);
-                    }
-                    while (iswspace(lexer->lookahead)) {
-                        skip(lexer);
-                    }
-                    char ctor[12] = "constructor";
-                    for (uint8_t i = 0; i < 11; i++) {
-                        if (lexer->lookahead != ctor[i]) {
-                            return true;
-                        }
-                        skip(lexer);
-                    }
-                    return false;
-                }
-                if (valid_symbols[GET] || valid_symbols[SET]) {
+                // An annotation may prefix a continuation (accessor, secondary/
+                // primary constructor) — skip it and re-dispatch on the word that
+                // follows, whose own case decides. Bailing to a semi here orphans
+                // `@OptIn(...) get()` accessors and `@X internal constructor` headers.
+                if (valid_symbols[CONSTRUCTOR] || valid_symbols[GET] || valid_symbols[SET]) {
                     bool saw_paren = false;
                     while ((saw_paren ? lexer->lookahead != '\n' : !iswspace(lexer->lookahead))) {
                         skip(lexer);
