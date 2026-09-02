@@ -306,3 +306,68 @@ fun test() {
               (identifier)
               (identifier))
             (identifier)))))))
+
+==========================================================
+Annotated primary constructor with a modifier on a newline
+==========================================================
+
+public class Foo
+    @JvmOverloads
+    internal constructor(
+        val bar: Int = 5
+    )
+
+---
+
+(source_file
+  (class_declaration
+    (modifiers
+      (visibility_modifier))
+    name: (identifier)
+    (primary_constructor
+      (modifiers
+        (annotation
+          (user_type
+            (identifier)))
+        (visibility_modifier))
+      (class_parameters
+        (class_parameter
+          (identifier)
+          (user_type
+            (identifier))
+          (number_literal))))))
+
+=============================
+Annotated getter on a newline
+=============================
+
+class Foo {
+  val bar: Int
+    @OptIn(ExperimentalStdlibApi::class)
+    get() = 5
+}
+
+---
+
+(source_file
+  (class_declaration
+    name: (identifier)
+    (class_body
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (getter
+          (modifiers
+            (annotation
+              (constructor_invocation
+                (user_type
+                  (identifier))
+                (value_arguments
+                  (value_argument
+                    (navigation_expression
+                      (identifier)
+                      (identifier)))))))
+          (function_body
+            (number_literal)))))))
