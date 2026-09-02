@@ -5030,6 +5030,31 @@
                       "type": "BLANK"
                     }
                   ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "if"
+                        },
+                        {
+                          "type": "FIELD",
+                          "name": "guard",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "expression"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
                 }
               ]
             },
@@ -6216,6 +6241,10 @@
     [
       "class_body",
       "enum_class_body"
+    ],
+    [
+      "if_expression",
+      "parenthesized_expression"
     ],
     [
       "binary_expression",

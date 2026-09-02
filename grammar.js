@@ -24,6 +24,9 @@ module.exports = grammar({
   conflicts: $ => [
     [$.class_body, $.enum_class_body],
 
+    // `when`-entry guards: `if (guard)` is locally ambiguous with if_expression
+    [$.if_expression, $.parenthesized_expression],
+
     [$.binary_expression, $.call_expression],
     [$.binary_expression, $.in_expression, $.call_expression],
     [$.binary_expression, $.infix_expression, $.call_expression],
@@ -852,6 +855,8 @@ module.exports = grammar({
         seq(
           commaSep1(field('condition', $._when_condition)),
           optional(','),
+          // Kotlin 2.1+ guard: `is Type if condition ->`
+          optional(seq('if', field('guard', $.expression))),
         ),
         'else',
       ),
