@@ -314,7 +314,12 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                 return true;
             case '@':
                 if (valid_symbols[CONSTRUCTOR]) {
-                    while (!iswspace(lexer->lookahead)) {
+                    // Guard against EOF mid-annotation (e.g. a truncated
+                    // "@Foo" at end of input). Without this, lookahead
+                    // never changes at EOF, so the loop condition never
+                    // becomes false and skip() stops making progress,
+                    // hanging forever.
+                    while (!lexer->eof(lexer) && !iswspace(lexer->lookahead)) {
                         skip(lexer);
                     }
                     while (iswspace(lexer->lookahead)) {
@@ -331,7 +336,9 @@ bool tree_sitter_kotlin_external_scanner_scan(void *payload, TSLexer *lexer, con
                 }
                 if (valid_symbols[GET] || valid_symbols[SET]) {
                     bool saw_paren = false;
-                    while ((saw_paren ? lexer->lookahead != '\n' : !iswspace(lexer->lookahead))) {
+                    // Same EOF hang as the CONSTRUCTOR branch above, for a
+                    // truncated "@get"/"@set" annotation.
+                    while (!lexer->eof(lexer) && (saw_paren ? lexer->lookahead != '\n' : !iswspace(lexer->lookahead))) {
                         skip(lexer);
                         if (lexer->lookahead == '(') {
                             saw_paren = true;
