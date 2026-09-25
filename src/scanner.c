@@ -38,7 +38,9 @@ static bool scan_words(TSLexer *lexer, const char words[MAX_WORDS][MAX_WORD_SIZE
                        uint8_t *index) {
     if (!scanned_word[0]) {
         for (uint8_t i = 0; i < MAX_WORD_SIZE - 1; i++) {
-            if (!iswalpha(lexer->lookahead)) {
+            // Read the whole identifier (letters, digits, `_`), so that `in1`, `open_file` or
+            // `set_value` are not mistaken for the keywords `in`, `open` or `set`.
+            if (!(iswalpha(lexer->lookahead) || (i > 0 && (iswdigit(lexer->lookahead) || lexer->lookahead == '_')))) {
                 if (i == 0) {
                     return false;
                 }

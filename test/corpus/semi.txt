@@ -306,3 +306,46 @@ fun test() {
               (identifier)
               (identifier))
             (identifier)))))))
+
+==========================================================
+Identifiers that start with a keyword at the start of a line
+==========================================================
+
+fun f() {
+  val in1 = 1
+  in1.toString()
+  open_file(in1)
+  set_value(2)
+  as_list()
+}
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (number_literal))
+        (call_expression
+          (navigation_expression
+            (identifier)
+            (identifier))
+          (value_arguments))
+        (call_expression
+          (identifier)
+          (value_arguments
+            (value_argument
+              (identifier))))
+        (call_expression
+          (identifier)
+          (value_arguments
+            (value_argument
+              (number_literal))))
+        (call_expression
+          (identifier)
+          (value_arguments))))))
