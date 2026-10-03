@@ -138,6 +138,10 @@
         "named": true
       },
       {
+        "type": "multi_dollar_string_literal",
+        "named": true
+      },
+      {
         "type": "multiline_string_literal",
         "named": true
       },
@@ -2922,6 +2926,10 @@
   },
   {
     "type": "line_comment",
+    "named": true
+  },
+  {
+    "type": "multi_dollar_string_literal",
     "named": true
   },
   {
