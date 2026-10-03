@@ -732,7 +732,8 @@ module.exports = grammar({
 
     infix_expression: $ => prec.left(PREC.INFIX, seq(
       $.expression,
-      $.identifier,
+      // `get` is a soft keyword (property getters) and a common infix function name (`insert { } get Table.id`)
+      choice($.identifier, alias('get', $.identifier)),
       $.expression,
     )),
 

@@ -1,0 +1,45 @@
+================================================================================
+Infix get after a trailing lambda
+================================================================================
+
+fun f() {
+    val id = t.insert {
+        it[code] = 2
+    } get t.id
+    val other = row get column
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (infix_expression
+            (call_expression
+              (navigation_expression
+                (identifier)
+                (identifier))
+              (annotated_lambda
+                (lambda_literal
+                  (assignment
+                    (index_expression
+                      (identifier)
+                      (identifier))
+                    (number_literal)))))
+            (identifier)
+            (navigation_expression
+              (identifier)
+              (identifier))))
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (infix_expression
+            (identifier)
+            (identifier)
+            (identifier)))))))
