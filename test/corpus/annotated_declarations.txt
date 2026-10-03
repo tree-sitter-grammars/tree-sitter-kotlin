@@ -1,0 +1,108 @@
+================================================================================
+Annotation class under an annotation, followed by a declaration
+================================================================================
+
+@Target(AnnotationTarget.CLASS)
+annotation class Internal
+
+@Deprecated("old")
+class Legacy {
+    fun go() = 1
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (class_declaration
+    (modifiers
+      (annotation
+        (constructor_invocation
+          (user_type
+            (identifier))
+          (value_arguments
+            (value_argument
+              (navigation_expression
+                (identifier)
+                (identifier))))))
+      (class_modifier))
+    (identifier))
+  (class_declaration
+    (modifiers
+      (annotation
+        (constructor_invocation
+          (user_type
+            (identifier))
+          (value_arguments
+            (value_argument
+              (string_literal
+                (string_content)))))))
+    (identifier)
+    (class_body
+      (function_declaration
+        (identifier)
+        (function_value_parameters)
+        (function_body
+          (number_literal))))))
+
+================================================================================
+Class under stacked annotations, with and without a body
+================================================================================
+
+@Component
+@Transactional
+class UserService {
+    // read user by primary key
+    fun find(id: Int) = repo.find(id)
+}
+
+@ImportRuntimeHints(value = [ResourceHints::class])
+@SpringBootApplication
+private class Application
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (class_declaration
+    (modifiers
+      (annotation
+        (user_type
+          (identifier)))
+      (annotation
+        (user_type
+          (identifier))))
+    (identifier)
+    (class_body
+      (line_comment)
+      (function_declaration
+        (identifier)
+        (function_value_parameters
+          (parameter
+            (identifier)
+            (user_type
+              (identifier))))
+        (function_body
+          (call_expression
+            (navigation_expression
+              (identifier)
+              (identifier))
+            (value_arguments
+              (value_argument
+                (identifier))))))))
+  (class_declaration
+    (modifiers
+      (annotation
+        (constructor_invocation
+          (user_type
+            (identifier))
+          (value_arguments
+            (value_argument
+              (identifier)
+              (collection_literal
+                (navigation_expression
+                  (identifier)
+                  (identifier)))))))
+      (annotation
+        (user_type
+          (identifier)))
+      (visibility_modifier))
+    (identifier)))
