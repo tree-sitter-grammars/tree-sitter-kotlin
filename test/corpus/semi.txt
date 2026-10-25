@@ -306,3 +306,231 @@ fun test() {
               (identifier)
               (identifier))
             (identifier)))))))
+
+==============================================
+Call to get with arguments after a local property
+==============================================
+
+fun f() {
+  val service = Service()
+  get("/x") { }
+}
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (call_expression
+            (identifier)
+            (value_arguments)))
+        (call_expression
+          (call_expression
+            (identifier)
+            (value_arguments
+              (value_argument
+                (string_literal
+                  (string_content)))))
+          (annotated_lambda
+            (lambda_literal)))))))
+
+==============================================
+Call to get with a lambda after a local property
+==============================================
+
+fun f() {
+  val service = Service()
+  get { }
+}
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (call_expression
+            (identifier)
+            (value_arguments)))
+        (call_expression
+          (identifier)
+          (annotated_lambda
+            (lambda_literal)))))))
+
+==============================================
+Call to set with a lambda after a local property
+==============================================
+
+fun f() {
+  val service = Service()
+  set("k") { }
+}
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (call_expression
+            (identifier)
+            (value_arguments)))
+        (call_expression
+          (call_expression
+            (identifier)
+            (value_arguments
+              (value_argument
+                (string_literal
+                  (string_content)))))
+          (annotated_lambda
+            (lambda_literal)))))))
+
+==============================================
+Call to set with two arguments after a local property
+==============================================
+
+fun f() {
+  val service = Service()
+  set ("k", v)
+}
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_value_parameters)
+    (function_body
+      (block
+        (property_declaration
+          (variable_declaration
+            (identifier))
+          (call_expression
+            (identifier)
+            (value_arguments)))
+        (call_expression
+          (identifier)
+          (value_arguments
+            (value_argument
+              (string_literal
+                (string_content)))
+            (value_argument
+              (identifier))))))))
+
+==============================================
+Accessors with parentheses stay accessors
+==============================================
+
+class Foo {
+  val a: Int
+    get() = 1
+  val b: Int
+    get() { return 2 }
+  var c: Int = 0
+    set(value) { field = value }
+  var d: Int = 0
+    set(значение) { field = значение }
+  val e: Int
+    get /* c */ () = 3
+}
+
+---
+
+(source_file
+  (class_declaration
+    (identifier)
+    (class_body
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (getter
+          (function_body
+            (number_literal))))
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (getter
+          (function_body
+            (block
+              (return_expression
+                (number_literal))))))
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (number_literal)
+        (setter
+          (identifier)
+          (function_body
+            (block
+              (assignment
+                (identifier)
+                (identifier))))))
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (number_literal)
+        (setter
+          (identifier)
+          (function_body
+            (block
+              (assignment
+                (identifier)
+                (identifier))))))
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (getter
+          (block_comment)
+          (function_body
+            (number_literal)))))))
+
+==============================================
+Accessor with a modifier and no body
+==============================================
+
+class Foo {
+  var a: Int = 0
+    private set
+}
+
+---
+
+(source_file
+  (class_declaration
+    (identifier)
+    (class_body
+      (property_declaration
+        (variable_declaration
+          (identifier)
+          (user_type
+            (identifier)))
+        (number_literal)
+        (setter
+          (modifiers
+            (visibility_modifier)))))))
